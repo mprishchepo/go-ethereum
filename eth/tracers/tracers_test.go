@@ -144,8 +144,9 @@ func TestPrestateTracerCreate2(t *testing.T) {
 	*/
 	origin, _ := signer.Sender(tx)
 	txContext := vm.TxContext{
-		Origin:   origin,
-		GasPrice: big.NewInt(1),
+		Origin:             origin,
+		GasPrice:           big.NewInt(1),
+		TransactionFeePaid: true,
 	}
 	context := vm.BlockContext{
 		CanTransfer: core.CanTransfer,
@@ -237,8 +238,9 @@ func testCallTracer(tracer string, dirPath string, t *testing.T) {
 			signer := types.MakeSigner(test.Genesis.Config, new(big.Int).SetUint64(uint64(test.Context.Number)))
 			origin, _ := signer.Sender(tx)
 			txContext := vm.TxContext{
-				Origin:   origin,
-				GasPrice: tx.GasPrice(),
+				Origin:             origin,
+				GasPrice:           tx.GasPrice(),
+				TransactionFeePaid: true,
 			}
 			context := vm.BlockContext{
 				CanTransfer: core.CanTransfer,
@@ -326,8 +328,9 @@ func BenchmarkTransactionTrace(b *testing.B) {
 		b.Fatal(err)
 	}
 	txContext := vm.TxContext{
-		Origin:   from,
-		GasPrice: tx.GasPrice(),
+		Origin:             from,
+		GasPrice:           tx.GasPrice(),
+		TransactionFeePaid: true,
 	}
 	context := vm.BlockContext{
 		CanTransfer: core.CanTransfer,
@@ -424,8 +427,9 @@ func benchTracer(tracerName string, test *callTracerTest, b *testing.B) {
 	}
 	origin, _ := signer.Sender(tx)
 	txContext := vm.TxContext{
-		Origin:   origin,
-		GasPrice: tx.GasPrice(),
+		Origin:             origin,
+		GasPrice:           tx.GasPrice(),
+		TransactionFeePaid: true,
 	}
 	context := vm.BlockContext{
 		CanTransfer: core.CanTransfer,
