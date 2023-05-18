@@ -104,7 +104,7 @@ func TestExecute(t *testing.T) {
 
 func TestCall(t *testing.T) {
 	state, _ := state.New(common.Hash{}, state.NewDatabase(rawdb.NewMemoryDatabase()), nil)
-	address := common.HexToAddress("0x0a")
+	address := common.HexToAddress("0x13")
 	state.SetCode(address, []byte{
 		byte(vm.PUSH1), 10,
 		byte(vm.PUSH1), 0,

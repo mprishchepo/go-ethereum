@@ -110,6 +110,29 @@ var PrecompiledContractsBLS = map[common.Address]PrecompiledContract{
 	common.BytesToAddress([]byte{18}): &bls12381MapG2{},
 }
 
+// PrecompiledContractsBerlinBLS contains the default set of pre-compiled Ethereum
+// contracts used in the Berlin release with BLS contracts.
+var PrecompiledContractsBerlinBLS = map[common.Address]PrecompiledContract{
+	common.BytesToAddress([]byte{1}):  &ecrecover{},
+	common.BytesToAddress([]byte{2}):  &sha256hash{},
+	common.BytesToAddress([]byte{3}):  &ripemd160hash{},
+	common.BytesToAddress([]byte{4}):  &dataCopy{},
+	common.BytesToAddress([]byte{5}):  &bigModExp{eip2565: true},
+	common.BytesToAddress([]byte{6}):  &bn256AddIstanbul{},
+	common.BytesToAddress([]byte{7}):  &bn256ScalarMulIstanbul{},
+	common.BytesToAddress([]byte{8}):  &bn256PairingIstanbul{},
+	common.BytesToAddress([]byte{9}):  &blake2F{},
+	common.BytesToAddress([]byte{10}): &bls12381G1Add{},
+	common.BytesToAddress([]byte{11}): &bls12381G1Mul{},
+	common.BytesToAddress([]byte{12}): &bls12381G1MultiExp{},
+	common.BytesToAddress([]byte{13}): &bls12381G2Add{},
+	common.BytesToAddress([]byte{14}): &bls12381G2Mul{},
+	common.BytesToAddress([]byte{15}): &bls12381G2MultiExp{},
+	common.BytesToAddress([]byte{16}): &bls12381Pairing{},
+	common.BytesToAddress([]byte{17}): &bls12381MapG1{},
+	common.BytesToAddress([]byte{18}): &bls12381MapG2{},
+}
+
 var (
 	PrecompiledAddressesBerlin    []common.Address
 	PrecompiledAddressesIstanbul  []common.Address
@@ -127,7 +150,7 @@ func init() {
 	for k := range PrecompiledContractsIstanbul {
 		PrecompiledAddressesIstanbul = append(PrecompiledAddressesIstanbul, k)
 	}
-	for k := range PrecompiledContractsBerlin {
+	for k := range PrecompiledContractsBerlinBLS {
 		PrecompiledAddressesBerlin = append(PrecompiledAddressesBerlin, k)
 	}
 }
