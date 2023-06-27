@@ -42,8 +42,10 @@ The state transitioning model does all the necessary work to work out a valid ne
 3) Create a new state object if the recipient is \0*32
 4) Value transfer
 == If contract creation ==
-  4a) Attempt to run transaction data
-  4b) If valid, use result as code for the new state object
+
+	4a) Attempt to run transaction data
+	4b) If valid, use result as code for the new state object
+
 == end ==
 5) Run Script section
 6) Derive new state root
@@ -259,13 +261,13 @@ func (st *StateTransition) preCheck() error {
 // TransitionDb will transition the state by applying the current message and
 // returning the evm execution result with following fields.
 //
-// - used gas:
-//      total gas used (including gas being refunded)
-// - returndata:
-//      the returned data from evm
-// - concrete execution error:
-//      various **EVM** error which aborts the execution,
-//      e.g. ErrOutOfGas, ErrExecutionReverted
+//   - used gas:
+//     total gas used (including gas being refunded)
+//   - returndata:
+//     the returned data from evm
+//   - concrete execution error:
+//     various **EVM** error which aborts the execution,
+//     e.g. ErrOutOfGas, ErrExecutionReverted
 //
 // However if any consensus issue encountered, return the error directly with
 // nil evm execution result.
@@ -286,6 +288,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	}
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
+	rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber)
 	homestead := st.evm.ChainConfig().IsHomestead(st.evm.Context.BlockNumber)
 	istanbul := st.evm.ChainConfig().IsIstanbul(st.evm.Context.BlockNumber)
 	london := st.evm.ChainConfig().IsLondon(st.evm.Context.BlockNumber)
@@ -306,10 +309,11 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		return nil, fmt.Errorf("%w: address %v", ErrInsufficientFundsForTransfer, msg.From().Hex())
 	}
 
-	// Set up the initial access list.
-	if rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber); rules.IsBerlin {
-		st.state.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
-	}
+	// Execute the preparatory steps for state transition which includes:
+	// - prepare accessList(post-berlin)
+	// - reset transient storage(eip 1153)
+	st.state.Prepare(rules, msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
+
 	var (
 		ret   []byte
 		vmerr error // vm errors do not effect consensus and are therefore not assigned to err
