@@ -3274,11 +3274,10 @@ func TestEIP1559Transition(t *testing.T) {
 	if actual.Cmp(expected) != 0 {
 		t.Fatalf("sender balance incorrect: expected %d, got %d", expected, actual)
 	}
-
-	// TestTransientStorageReset ensures the transient storage is wiped correctly
-	// between transactions.
 }
 
+// TestTransientStorageReset ensures the transient storage is wiped correctly
+// between transactions.
 func TestTransientStorageReset(t *testing.T) {
 	var (
 		engine      = ethash.NewFaker()
@@ -3323,9 +3322,13 @@ func TestTransientStorageReset(t *testing.T) {
 			address: {Balance: funds},
 		},
 	}
+
 	nonce := uint64(0)
-	signer := types.HomesteadSigner{}
-	_, blocks, _ := GenerateChainWithGenesis(gspec, engine, 1, func(i int, b *BlockGen) {
+	db := rawdb.NewMemoryDatabase()
+	signer := types.LatestSigner(gspec.Config)
+	genesis := gspec.MustCommit(db)
+
+	blocks, _ := GenerateChain(gspec.Config, genesis, engine, db, 1, func(i int, b *BlockGen) {
 		fee := big.NewInt(1)
 		if b.header.BaseFee != nil {
 			fee = b.header.BaseFee
@@ -3350,8 +3353,11 @@ func TestTransientStorageReset(t *testing.T) {
 		nonce++
 	})
 
+	diskdb := rawdb.NewMemoryDatabase()
+	gspec.MustCommit(diskdb)
+
 	// Initialize the blockchain with 1153 enabled.
-	chain, err := NewBlockChain(rawdb.NewMemoryDatabase(), nil, gspec, nil, engine, vmConfig, nil, nil)
+	chain, err := NewBlockChain(diskdb, nil, gspec.Config, engine, vmConfig, nil, nil)
 	if err != nil {
 		t.Fatalf("failed to create tester chain: %v", err)
 	}
