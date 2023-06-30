@@ -69,6 +69,8 @@ func newLondonInstructionSet() JumpTable {
 	instructionSet := newBerlinInstructionSet()
 	enable3529(&instructionSet) // EIP-3529: Reduction in refunds https://eips.ethereum.org/EIPS/eip-3529
 	enable3198(&instructionSet) // Base fee opcode https://eips.ethereum.org/EIPS/eip-3198
+	// Uncomment the line below to enable EIP-1153 support
+	// enable1153(&instructionSet) // EIP-1153: TSTORE and TLOAD opcodes https://eips.ethereum.org/EIPS/eip-1153
 	return instructionSet
 }
 
